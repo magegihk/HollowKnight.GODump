@@ -4,41 +4,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using UnityEngine;
-
+using JetBrains.Annotations;
 
 namespace GODump
 {
     class Dump : MonoBehaviour
     {
+        private static readonly string _spritePath = Application.persistentDataPath + "/sprites/";
+
         private List<tk2dSpriteCollectionData> tk2dSpriteCollectionDatas;
         private List<tk2dSpriteAnimation> tk2dSpriteAnimations;
         private string[] AnimLibNames;
-
         private int num;
         private string mainGameObjectName;
         private GameObject mainGameObject;
+        private SpriteInfo spriteInfo;
+
 
         public void Start()
         {
             tk2dSpriteCollectionDatas = new List<tk2dSpriteCollectionData>();
             tk2dSpriteAnimations = new List<tk2dSpriteAnimation>();
-            AnimLibNames = new string[]
-            {
-                //"Knight",
-                //"Geo",
-                //"Light Effects",
-                //"Spells Anim",
-                //"Strikes",
-                //"Dust",
-                //"Knight Effects Anim",
-                //"Charm Blocker Anim",
-                //"Dream Effects",
-                //"Hollow Shade"
-            };
+            spriteInfo = new SpriteInfo();
+            AnimLibNames = new string[] { };
+
 
         }
         public void Update()
         {
+            if (Input.GetKeyDown(KeyCode.F2))
+            {
+                
+            }
             if (Input.GetKeyDown(KeyCode.F3))
             {
                 GODump.instance.LoadGlobalSettings();
@@ -166,8 +163,23 @@ namespace GODump
                             Texture texture = frame.spriteCollection.spriteDefinitions[frame.spriteId].material.mainTexture;
                             Texture2D texture2D = SpriteDump.TextureReadHack((Texture2D)texture);
 
-                            string path = Application.persistentDataPath + "/sprites/" + animL.name + "/0.Atlases/" + frame.spriteCollection.spriteCollectionName + ".png";
-                            string path0 = Application.persistentDataPath + "/sprites/" + animL.name + "/" + i + "." + clip.name + "/atlas.png";
+                            string collectionname = frame.spriteCollection.spriteCollectionName;
+                            string path = _spritePath + animL.name + "/0.Atlases/" + collectionname + ".png";
+                            string path0 = _spritePath + animL.name + "/" + i + "." + clip.name + "/atlas.png";
+                            string path1 = _spritePath + animL.name + "/" + i + "." + clip.name + "/" + frame.spriteId + "_position.png";
+                            string path2 = _spritePath + animL.name + "/" + i + "." + clip.name + "/" + frame.spriteId + ".png";
+
+                            int x0 = (int)(uv.Min(v => v.x) * texture2D.width);
+                            int y0 = (int)(uv.Min(v => v.y) * texture2D.height);
+                            int x1 = (int)(uv.Max(v => v.x) * texture2D.width);
+                            int y1 = (int)(uv.Max(v => v.y) * texture2D.height);
+                            int width = x1 - x0;
+                            int height = y1 - y0;
+
+                            //the origin in GUI is left top other than left bottom,learn more in UnityEngine.Rect
+                            int y2 = texture2D.height - y1;
+
+                            bool flipped = frame.spriteCollection.spriteDefinitions[frame.spriteId].flipped == tk2dSpriteDefinition.FlipMode.Tk2d;
 
                             if (!File.Exists(path) && GODump.instance.GlobalSettings.dumpAtlasOnce)
                             {
@@ -179,31 +191,21 @@ namespace GODump
                                 SpriteDump.SaveTextureToFile(texture2D, path0);
                                 num++;
                             }
-
-                            int x0 = (int)(uv.Min(v => v.x) * texture2D.width);
-                            int y0 = (int)(uv.Min(v => v.y) * texture2D.height);
-                            int x1 = (int)(uv.Max(v => v.x) * texture2D.width);
-                            int y1 = (int)(uv.Max(v => v.y) * texture2D.height);
-                            int width = x1 - x0;
-                            int height = y1 - y0;
-
-                            //the origin in GUI is left top other than left bottom,learn more in UnityEngine.Rect
-                            y0 = texture2D.height - y1;
-
-                            string path1 = Application.persistentDataPath + "/sprites/" + animL.name + "/" + i + "." + clip.name + "/" + frame.spriteId + "_position.png";
-                            string path2 = Application.persistentDataPath + "/sprites/" + animL.name + "/" + i + "." + clip.name + "/" + frame.spriteId + ".png";
-
                             if (!File.Exists(path1) && GODump.instance.GlobalSettings.dumpPosition)
                             {
-                                Texture2D subposition2D = SpriteDump.SubTexturePosition(texture2D, x0, y0, width, height);
+                                Texture2D subposition2D = SpriteDump.SubTexturePosition(texture2D, x0, y2, width, height);
                                 SpriteDump.SaveTextureToFile(subposition2D, path1);
                                 num++;
                                 UnityEngine.Object.DestroyImmediate(subposition2D);
                             }
+                            if (GODump.instance.GlobalSettings.dumpSpriteInfo)
+                            {
+                                spriteInfo.Add(frame.spriteId, x0, y0, width, height, clip.name, collectionname, path2,  flipped);
+                            }
                             if (!File.Exists(path2))
                             {
-                                Texture2D subtexture2D = SpriteDump.SubTexture(texture2D, x0, y0, width, height);
-                                if (frame.spriteCollection.spriteDefinitions[frame.spriteId].flipped == tk2dSpriteDefinition.FlipMode.Tk2d)
+                                Texture2D subtexture2D = SpriteDump.SubTexture(texture2D, x0, y2, width, height);
+                                if (flipped)
                                 {
                                     SpriteDump.Tk2dFlip(ref subtexture2D);
                                 }
@@ -215,9 +217,25 @@ namespace GODump
                         }
                         yield return new WaitForSeconds(1.0f);
                     }
+
+                    string spriteinfopath = _spritePath + animL.name + "/0.Atlases/SpriteInfo.json";
+                    if (!File.Exists(spriteinfopath) && GODump.instance.GlobalSettings.dumpSpriteInfo)
+                    {
+                        using (FileStream fileStream = File.Create(spriteinfopath))
+                        {
+                            using (StreamWriter streamWriter = new StreamWriter(fileStream))
+                            {
+                                string value = JsonUtility.ToJson(spriteInfo,true);
+                                streamWriter.Write(value);
+                            }
+                        }
+                    }
+                    
+
                     GODump.instance.Log("End Dumping sprites in tk2dSpriteAnimator [" + animL.name + "].");
+
                 }
-                
+
             }
             
 
@@ -229,4 +247,6 @@ namespace GODump
 
 
     }
+
+
 }

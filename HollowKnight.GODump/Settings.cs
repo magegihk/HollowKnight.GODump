@@ -22,6 +22,11 @@ namespace GODump
             get => GetBool(false);
             set => SetBool(value);
         }
+        public bool dumpSpriteInfo
+        {
+            get => GetBool(false);
+            set => SetBool(value);
+        }
         public string mainGameObjectName
         {
             get => GetString("Knight");

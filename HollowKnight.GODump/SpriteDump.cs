@@ -9,15 +9,15 @@ namespace GODump
         private static readonly Color[] colors = new Color[4096 * 4096];
         public static void Tk2dFlip(ref Texture2D texture2D)
         {
-            Texture2D fliped = new Texture2D(texture2D.height, texture2D.width);
+            Texture2D flipped = new Texture2D(texture2D.height, texture2D.width);
             for (int x = 0; x < texture2D.width; x++)
             {
                 for (int y = 0; y < texture2D.height; y++)
                 {
-                    fliped.SetPixel(y, x, texture2D.GetPixel(x, y));
+                    flipped.SetPixel(y, x, texture2D.GetPixel(x, y));
                 }
             }
-            texture2D = fliped;
+            texture2D = flipped;
         }
 
         public static Texture2D SubTexturePosition(Texture2D in_tex, int x, int y, int w, int h)
