@@ -39,5 +39,5 @@ namespace GODump
             set => SetString(value);
         }
     }
-    
+
 }

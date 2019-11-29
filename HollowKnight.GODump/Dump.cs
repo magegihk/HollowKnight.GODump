@@ -18,14 +18,13 @@ namespace GODump
         private int num;
         private string mainGameObjectName;
         private GameObject mainGameObject;
-        private SpriteInfo spriteInfo;
+        
 
 
         public void Start()
         {
             tk2dSpriteCollectionDatas = new List<tk2dSpriteCollectionData>();
             tk2dSpriteAnimations = new List<tk2dSpriteAnimation>();
-            spriteInfo = new SpriteInfo();
             AnimLibNames = new string[] { };
 
 
@@ -34,7 +33,7 @@ namespace GODump
         {
             if (Input.GetKeyDown(KeyCode.F2))
             {
-                
+
             }
             if (Input.GetKeyDown(KeyCode.F3))
             {
@@ -44,11 +43,11 @@ namespace GODump
                 if (mainGameObject)
                 {
                     GODump.instance.Log("Main GameObject [" + mainGameObjectName + "] Found.");
-                    
+
                     GODump.instance.Log("Begin Dumping Main GameObject.");
                     DumpKnight(mainGameObject, 0);
                     GODump.instance.Log("End Dumping Main GameObject.");
-                    
+
 
                     GODump.instance.Log("Begin Dumping SpriteCollection.");
                     DumpSpriteCollection(mainGameObject);
@@ -63,7 +62,7 @@ namespace GODump
                     GODump.instance.GlobalSettings.AnimationsToDump = String.Join("|", AnimLibNames);
                     GODump.instance.SaveGlobalSettings();
                 }
-                
+
             }
 
             if (Input.GetKeyDown(KeyCode.F4) && mainGameObject)
@@ -71,13 +70,13 @@ namespace GODump
                 GODump.instance.LoadGlobalSettings();
                 AnimLibNames = GODump.instance.GlobalSettings.AnimationsToDump.Split('|');
                 StartCoroutine(DumpAllSprites());
-                 
+
             }
         }
 
 
 
-        private void DumpKnight(GameObject go,int depth)
+        private void DumpKnight(GameObject go, int depth)
         {
             GODump.instance.Log(new String('-', depth) + go.name);
             foreach (Component comp in go.GetComponents<Component>())
@@ -97,7 +96,7 @@ namespace GODump
                         GODump.instance.Log(new String('-', depth) + "<" + comp.GetType().ToString() + ">");
                         break;
                 }
-                
+
 
 
             }
@@ -114,13 +113,13 @@ namespace GODump
                 if (!tk2dSpriteCollectionDatas.Contains(sprite.Collection))
                 {
                     tk2dSpriteCollectionDatas.Add(sprite.Collection);
-                    
+
                     GODump.instance.Log("<SpriteCollectionInfo:[GameObjectName]" + sprite.gameObject.name + "/[CollectionName]" + sprite.Collection.spriteCollectionName + "/[assetName]" + sprite.Collection.assetName + ">");
                     foreach (tk2dSpriteDefinition def in sprite.Collection.spriteDefinitions)
                     {
                         GODump.instance.Log("(" + sprite.Collection.spriteCollectionName + ":" + def.name + ")");
                     }
-                    
+
                 }
             }
         }
@@ -132,13 +131,13 @@ namespace GODump
                 if (!tk2dSpriteAnimations.Contains(anim.Library))
                 {
                     tk2dSpriteAnimations.Add(anim.Library);
-                    
+
                     GODump.instance.Log("<AnimatorLibInfo:[GameObjectName]" + anim.gameObject.name + " /[AnimationName] " + anim.Library.name + ">");
                     foreach (tk2dSpriteAnimationClip clip in anim.Library.clips)
                     {
                         GODump.instance.Log("(" + anim.Library.name + ":" + clip.name + ")");
                     }
-                    
+
                 }
             }
         }
@@ -152,12 +151,16 @@ namespace GODump
                 if (AnimLibNames.Contains(animL.name))
                 {
                     int i = 0;
+                    SpriteInfo spriteInfo = new SpriteInfo();
                     GODump.instance.Log("Begin Dumping sprites in tk2dSpriteAnimator [" + animL.name + "].");
                     foreach (tk2dSpriteAnimationClip clip in animL.clips)
                     {
                         i++;
+                        int j = -1;
                         foreach (tk2dSpriteAnimationFrame frame in clip.frames)
                         {
+                            j++;
+
                             Vector2[] uv = frame.spriteCollection.spriteDefinitions[frame.spriteId].uvs;
 
                             Texture texture = frame.spriteCollection.spriteDefinitions[frame.spriteId].material.mainTexture;
@@ -165,9 +168,9 @@ namespace GODump
 
                             string collectionname = frame.spriteCollection.spriteCollectionName;
                             string path = _spritePath + animL.name + "/0.Atlases/" + collectionname + ".png";
-                            string path0 = _spritePath + animL.name + "/" + i + "." + clip.name + "/atlas.png";
-                            string path1 = _spritePath + animL.name + "/" + i + "." + clip.name + "/" + frame.spriteId + "_position.png";
-                            string path2 = _spritePath + animL.name + "/" + i + "." + clip.name + "/" + frame.spriteId + ".png";
+                            string path0 = _spritePath + animL.name + "/" + i + "." + clip.name + "/" + collectionname + ".png";
+                            string path1 = _spritePath + animL.name + "/" + i + "." + clip.name + "/" + j + "-" + frame.spriteId + "_position.png";
+                            string path2 = _spritePath + animL.name + "/" + i + "." + clip.name + "/" + j + "-" + frame.spriteId + ".png";
 
                             int x0 = (int)(uv.Min(v => v.x) * texture2D.width);
                             int y0 = (int)(uv.Min(v => v.y) * texture2D.height);
@@ -200,7 +203,7 @@ namespace GODump
                             }
                             if (GODump.instance.GlobalSettings.dumpSpriteInfo)
                             {
-                                spriteInfo.Add(frame.spriteId, x0, y0, width, height, clip.name, collectionname, path2,  flipped);
+                                spriteInfo.Add(frame.spriteId, x0, y0, width, height, texture2D.width, texture2D.height, clip.name, collectionname, path2, flipped);
                             }
                             if (!File.Exists(path2))
                             {
@@ -225,25 +228,25 @@ namespace GODump
                         {
                             using (StreamWriter streamWriter = new StreamWriter(fileStream))
                             {
-                                string value = JsonUtility.ToJson(spriteInfo,true);
+                                string value = JsonUtility.ToJson(spriteInfo, true);
                                 streamWriter.Write(value);
                             }
                         }
                     }
-                    
+
 
                     GODump.instance.Log("End Dumping sprites in tk2dSpriteAnimator [" + animL.name + "].");
 
                 }
 
             }
-            
+
 
             GODump.instance.Log("End Dumping Sprite.png " + num + " sprites dumped.");
             yield break;
         }
 
-        
+
 
 
     }

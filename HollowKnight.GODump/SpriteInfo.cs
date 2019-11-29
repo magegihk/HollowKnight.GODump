@@ -14,6 +14,8 @@ namespace GODump
         public List<int> sy;
         public List<int> swidth;
         public List<int> sheight;
+        public List<int> satlaswidth;
+        public List<int> satlasheight;
 
         public List<string> sclipname;
         public List<string> scollectionname;
@@ -28,6 +30,8 @@ namespace GODump
             sy = new List<int>();
             swidth = new List<int>();
             sheight = new List<int>();
+            satlaswidth = new List<int>();
+            satlasheight = new List<int>();
 
             sclipname = new List<string>();
             scollectionname = new List<string>();
@@ -37,13 +41,15 @@ namespace GODump
 
         }
 
-        public void Add(int _sid, int _sx, int _sy, int _swidth, int _height, string _sclipname, string _scollectionname, string _spath, bool _sfilpped)
+        public void Add(int _sid, int _sx, int _sy, int _swidth, int _height, int _satlaswidth, int _satlasheight, string _sclipname, string _scollectionname, string _spath, bool _sfilpped)
         {
             sid.Add(_sid);
             sx.Add(_sx);
             sy.Add(_sy);
             swidth.Add(_swidth);
             sheight.Add(_height);
+            satlaswidth.Add(_satlaswidth);
+            satlasheight.Add(_satlasheight);
             sclipname.Add(_sclipname);
             scollectionname.Add(_scollectionname);
             spath.Add(_spath);

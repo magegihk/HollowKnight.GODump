@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace GODump
 {
-    public class GODump : Mod<SaveSettings , GlobalSettings>
+    public class GODump : Mod<SaveSettings, GlobalSettings>
     {
         internal static GODump instance;
         public override void Initialize()
@@ -25,7 +25,7 @@ namespace GODump
 
         public override string GetVersion()
         {
-            return "v1.0";
+            return "v1.1";
         }
 
         public override bool IsCurrent()
@@ -45,6 +45,6 @@ namespace GODump
             this.SaveGlobalSettings();
         }
 
-        
+
     }
 }
