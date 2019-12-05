@@ -17,7 +17,12 @@
 4. 按F3，然后 GODump.GlobalSettings.json 底下会新增一个包含了你的 **mainGameObject** 本身以及子对象的动画集合的字符串变量
 5. 删除该字符串中你不想要的动画集合然后保存
 6. 按F4，然后你选择的**mainGameObject**中的所有精灵图都会以png的格式被导出到 "AppData\LocalLow\Team Cherry\Hollow Knight\sprites" 文件夹中
-7. 如果你修改了设置，你还能获得每个精灵图的 atlas.png 和 position.png。
+7. 如果你修改了设置，你还能获得每个精灵图的 atlas.png 和 position.png
+8. 要打包回去请将设置dumpAtlasOnce和dumpSpriteInfo改为true。
+
+## 更新
+
+* **v1.2** 导出精灵图的编号方式从“图集编号”改为“动画编号3位-帧序编号2位-图集编号3位”；精灵图裁剪向下一个像素；现在可以用**精灵图包装鸡**把导出修改的精灵图打包回去了。
 
 ## 感谢
 * [KayDeeTee](https://github.com/KayDeeTee) - SpriteDump Mod 解决了导出png的问题，帮我节省了不少时间。

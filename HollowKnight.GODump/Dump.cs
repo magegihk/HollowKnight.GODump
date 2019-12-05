@@ -18,7 +18,7 @@ namespace GODump
         private int num;
         private string mainGameObjectName;
         private GameObject mainGameObject;
-        
+
 
 
         public void Start()
@@ -168,9 +168,10 @@ namespace GODump
 
                             string collectionname = frame.spriteCollection.spriteCollectionName;
                             string path = _spritePath + animL.name + "/0.Atlases/" + collectionname + ".png";
-                            string path0 = _spritePath + animL.name + "/" + i + "." + clip.name + "/" + collectionname + ".png";
-                            string path1 = _spritePath + animL.name + "/" + i + "." + clip.name + "/" + j + "-" + frame.spriteId + "_position.png";
-                            string path2 = _spritePath + animL.name + "/" + i + "." + clip.name + "/" + j + "-" + frame.spriteId + ".png";
+                            string path0 = _spritePath + animL.name + "/" + String.Format("{0:D3}", i) + "." + clip.name + "/" + collectionname + ".png";
+                            string path1 = _spritePath + animL.name + "/" + String.Format("{0:D3}", i) + "." + clip.name + "/" + String.Format("{0:D3}", i) + "-" + String.Format("{0:D2}", j) + "-" + String.Format("{0:D3}", frame.spriteId) + "_position.png";
+                            string path2r = animL.name + "/" + String.Format("{0:D3}", i) + "." + clip.name + "/" + String.Format("{0:D3}", i) + "-" + String.Format("{0:D2}", j) + "-" + String.Format("{0:D3}", frame.spriteId) + ".png";
+                            string path2 = _spritePath + path2r;
 
                             int x0 = (int)(uv.Min(v => v.x) * texture2D.width);
                             int y0 = (int)(uv.Min(v => v.y) * texture2D.height);
@@ -180,7 +181,7 @@ namespace GODump
                             int height = y1 - y0;
 
                             //the origin in GUI is left top other than left bottom,learn more in UnityEngine.Rect
-                            int y2 = texture2D.height - y1;
+                            int y2 = texture2D.height - y1 - 1;
 
                             bool flipped = frame.spriteCollection.spriteDefinitions[frame.spriteId].flipped == tk2dSpriteDefinition.FlipMode.Tk2d;
 
@@ -203,7 +204,7 @@ namespace GODump
                             }
                             if (GODump.instance.GlobalSettings.dumpSpriteInfo)
                             {
-                                spriteInfo.Add(frame.spriteId, x0, y0, width, height, texture2D.width, texture2D.height, clip.name, collectionname, path2, flipped);
+                                spriteInfo.Add(frame.spriteId, x0, y0, width, height, texture2D.width, texture2D.height, collectionname, path2r, flipped);
                             }
                             if (!File.Exists(path2))
                             {
