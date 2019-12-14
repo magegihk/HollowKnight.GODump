@@ -41,6 +41,7 @@ namespace GODump
             GlobalSettings.dumpSpriteInfo = GlobalSettings.dumpSpriteInfo;
             GlobalSettings.mainGameObjectName = GlobalSettings.mainGameObjectName;
             GlobalSettings.AnimationsToDump = GlobalSettings.AnimationsToDump;
+            GlobalSettings.SpriteSizeFix = GlobalSettings.SpriteSizeFix;
 
             this.SaveGlobalSettings();
         }

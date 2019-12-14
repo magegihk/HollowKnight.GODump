@@ -4,6 +4,7 @@ using UnityEngine;
 namespace GODump
 {
     //Reference to SpriteDump.dll by KayDeeTee
+    //And have been modified a lot
     static class SpriteDump
     {
         private static readonly Color[] colors = new Color[4096 * 4096];
@@ -19,23 +20,6 @@ namespace GODump
             }
             texture2D = flipped;
         }
-
-        public static Texture2D SubTexturePosition(Texture2D in_tex, int x, int y, int w, int h)
-        {
-            RenderTexture temporary = RenderTexture.GetTemporary(in_tex.width, in_tex.height, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Linear);
-            Graphics.Blit(in_tex, temporary);
-            RenderTexture active = RenderTexture.active;
-            RenderTexture.active = temporary;
-            Texture2D texture2D = new Texture2D(in_tex.width, in_tex.height);
-            texture2D.SetPixels(0, 0, in_tex.width, in_tex.height, colors);
-            texture2D.ReadPixels(new Rect((float)x, (float)y, (float)w, (float)h), x, y);
-            texture2D.Apply();
-            RenderTexture.active = active;
-            RenderTexture.ReleaseTemporary(temporary);
-            return texture2D;
-        }
-
-        
         public static Texture2D TextureReadHack(Texture2D in_tex)
         {
             RenderTexture temporary = RenderTexture.GetTemporary(in_tex.width, in_tex.height, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Linear);
@@ -49,18 +33,27 @@ namespace GODump
             RenderTexture.ReleaseTemporary(temporary);
             return texture2D;
         }
-
-        public static Texture2D SubTexture(Texture2D in_tex, int x, int y, int w, int h)
+        public static Texture2D SubTexture(Texture2D in_tex, RectP rectP)
         {
-            RenderTexture temporary = RenderTexture.GetTemporary(in_tex.width, in_tex.height, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Linear);
-            Graphics.Blit(in_tex, temporary);
-            RenderTexture active = RenderTexture.active;
-            RenderTexture.active = temporary;
-            Texture2D texture2D = new Texture2D(w, h);
-            texture2D.ReadPixels(new Rect((float)x, (float)y, (float)w, (float)h), 0, 0);
+            Texture2D texture2D = new Texture2D(rectP.width, rectP.height);
+            texture2D.SetPixels(in_tex.GetPixels(rectP.x, rectP.y, rectP.width, rectP.height));
             texture2D.Apply();
-            RenderTexture.active = active;
-            RenderTexture.ReleaseTemporary(temporary);
+            return texture2D;
+        }
+        public static Texture2D SubTexturePosition(Texture2D in_tex, RectP rectP)
+        {
+            Texture2D texture2D = new Texture2D(in_tex.width, in_tex.height);
+            texture2D.SetPixels(colors);
+            texture2D.SetPixels(rectP.x, rectP.y, rectP.width, rectP.height, in_tex.GetPixels(rectP.x, rectP.y, rectP.width, rectP.height));
+            texture2D.Apply();
+            return texture2D;
+        }
+        public static Texture2D SpriteSizeFix(Texture2D in_tex, RectP rectP,RectP border)
+        {
+            Texture2D texture2D = new Texture2D(border.width, border.height);
+            texture2D.SetPixels(colors);
+            texture2D.SetPixels(rectP.x, rectP.y, rectP.width, rectP.height, in_tex.GetPixels());
+            texture2D.Apply();
             return texture2D;
         }
         public static void SaveTextureToFile(Texture2D tex, string fileName)
@@ -72,7 +65,20 @@ namespace GODump
             binaryWriter.Write(buffer);
             binaryWriter.Close();
         }
+        public struct RectP
+        {
+            public int x { set; get; }
+            public int y { set; get; }
+            public int width { set; get; }
+            public int height { set; get; }
 
-        
+            public RectP(int _x,int _y,int _width,int _height)
+            {
+                x = _x;
+                y = _y;
+                width = _width;
+                height = _height;
+            }
+        }
     }
 }

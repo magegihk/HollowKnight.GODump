@@ -27,6 +27,11 @@ namespace GODump
             get => GetBool(false);
             set => SetBool(value);
         }
+        public bool SpriteSizeFix
+        {
+            get => GetBool(false);
+            set => SetBool(value);
+        }
         public string mainGameObjectName
         {
             get => GetString("Knight");

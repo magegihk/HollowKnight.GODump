@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using UnityEngine;
-using JetBrains.Annotations;
+using RectP = GODump.SpriteDump.RectP;
 
 namespace GODump
 {
@@ -96,9 +96,6 @@ namespace GODump
                         GODump.instance.Log(new String('-', depth) + "<" + comp.GetType().ToString() + ">");
                         break;
                 }
-
-
-
             }
             foreach (Transform child in go.transform)
             {
@@ -157,13 +154,37 @@ namespace GODump
                     {
                         i++;
                         int j = -1;
+                        float Xmax = -10000f;
+                        float Ymax = -10000f;
+                        float Xmin = 10000f;
+                        float Ymin = 10000f;
+                        foreach (tk2dSpriteAnimationFrame frame in clip.frames)
+                        {
+                            tk2dSpriteDefinition tk2DSpriteDefinition = frame.spriteCollection.spriteDefinitions[frame.spriteId];
+                            Vector3[] pos = tk2DSpriteDefinition.positions;
+                            bool flipped = tk2DSpriteDefinition.flipped == tk2dSpriteDefinition.FlipMode.Tk2d;
+
+                            float xmin = pos.Min(v => v.x);
+                            float ymin = pos.Min(v => v.y);
+                            float xmax = pos.Max(v => v.x);
+                            float ymax = pos.Max(v => v.y);
+
+
+
+                            Xmin = Xmin < xmin ? Xmin : xmin;
+                            Ymin = Ymin < ymin ? Ymin : ymin;
+                            Xmax = Xmax > xmax ? Xmax : xmax;
+                            Ymax = Ymax > ymax ? Ymax : ymax;
+
+                        }
                         foreach (tk2dSpriteAnimationFrame frame in clip.frames)
                         {
                             j++;
 
-                            Vector2[] uv = frame.spriteCollection.spriteDefinitions[frame.spriteId].uvs;
-
-                            Texture texture = frame.spriteCollection.spriteDefinitions[frame.spriteId].material.mainTexture;
+                            tk2dSpriteDefinition tk2DSpriteDefinition = frame.spriteCollection.spriteDefinitions[frame.spriteId];
+                            Vector2[] uv = tk2DSpriteDefinition.uvs;
+                            Vector3[] pos = tk2DSpriteDefinition.positions;
+                            Texture texture = tk2DSpriteDefinition.material.mainTexture;
                             Texture2D texture2D = SpriteDump.TextureReadHack((Texture2D)texture);
 
                             string collectionname = frame.spriteCollection.spriteCollectionName;
@@ -173,17 +194,34 @@ namespace GODump
                             string path2r = animL.name + "/" + String.Format("{0:D3}", i) + "." + clip.name + "/" + String.Format("{0:D3}", i) + "-" + String.Format("{0:D2}", j) + "-" + String.Format("{0:D3}", frame.spriteId) + ".png";
                             string path2 = _spritePath + path2r;
 
-                            int x0 = (int)(uv.Min(v => v.x) * texture2D.width);
-                            int y0 = (int)(uv.Min(v => v.y) * texture2D.height);
-                            int x1 = (int)(uv.Max(v => v.x) * texture2D.width);
-                            int y1 = (int)(uv.Max(v => v.y) * texture2D.height);
-                            int width = x1 - x0;
-                            int height = y1 - y0;
+                            bool flipped = tk2DSpriteDefinition.flipped == tk2dSpriteDefinition.FlipMode.Tk2d;
 
-                            //the origin in GUI is left top other than left bottom,learn more in UnityEngine.Rect
-                            int y2 = texture2D.height - y1 - 1;
+                            float xmin = pos.Min(v => v.x);
+                            float ymin = pos.Min(v => v.y);
+                            float xmax = pos.Max(v => v.x);
+                            float ymax = pos.Max(v => v.y);
 
-                            bool flipped = frame.spriteCollection.spriteDefinitions[frame.spriteId].flipped == tk2dSpriteDefinition.FlipMode.Tk2d;
+
+
+                            int x1 = (int)(uv.Min(v => v.x) * texture2D.width);
+                            int y1 = (int)(uv.Min(v => v.y) * texture2D.height);
+                            int x2 = (int)(uv.Max(v => v.x) * texture2D.width);
+                            int y2 = (int)(uv.Max(v => v.y) * texture2D.height);
+
+                            int x3 = (int)((Xmin - Xmin) / tk2DSpriteDefinition.texelSize.x);
+                            int y3 = (int)((Ymin - Ymin) / tk2DSpriteDefinition.texelSize.y);
+                            int x4 = (int)((Xmax - Xmin) / tk2DSpriteDefinition.texelSize.x);
+                            int y4 = (int)((Ymax - Ymin) / tk2DSpriteDefinition.texelSize.y);
+
+                            int x5 = (int)((xmin - Xmin) / tk2DSpriteDefinition.texelSize.x);
+                            int y5 = (int)((ymin - Ymin) / tk2DSpriteDefinition.texelSize.y);
+                            int x6 = (int)((xmax - Xmin) / tk2DSpriteDefinition.texelSize.x);
+                            int y6 = (int)((ymax - Ymin) / tk2DSpriteDefinition.texelSize.y);
+
+                            RectP uvpixel = new RectP(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
+                            RectP posborder = new RectP(x1 - x5 + x3, y1 - y5 + y3, x4 - x3 + 1, y4 - y3 + 1);
+                            RectP uvpixelr = new RectP(x5 - x3, y5 - y3, x2 - x1 + 1, y2 - y1 + 1);
+
 
                             if (!File.Exists(path) && GODump.instance.GlobalSettings.dumpAtlasOnce)
                             {
@@ -197,25 +235,35 @@ namespace GODump
                             }
                             if (!File.Exists(path1) && GODump.instance.GlobalSettings.dumpPosition)
                             {
-                                Texture2D subposition2D = SpriteDump.SubTexturePosition(texture2D, x0, y2, width, height);
+                                Texture2D subposition2D = SpriteDump.SubTexturePosition(texture2D, uvpixel);
                                 SpriteDump.SaveTextureToFile(subposition2D, path1);
                                 num++;
                                 UnityEngine.Object.DestroyImmediate(subposition2D);
                             }
                             if (GODump.instance.GlobalSettings.dumpSpriteInfo)
                             {
-                                spriteInfo.Add(frame.spriteId, x0, y0, width, height, texture2D.width, texture2D.height, collectionname, path2r, flipped);
+                                spriteInfo.Add(frame.spriteId, x1, y1, collectionname, path2r, flipped);
                             }
                             if (!File.Exists(path2))
                             {
-                                Texture2D subtexture2D = SpriteDump.SubTexture(texture2D, x0, y2, width, height);
+                                Texture2D subtexture2D = SpriteDump.SubTexture(texture2D, uvpixel);
                                 if (flipped)
                                 {
                                     SpriteDump.Tk2dFlip(ref subtexture2D);
                                 }
-                                SpriteDump.SaveTextureToFile(subtexture2D, path2);
-                                num++;
+                                if (GODump.instance.GlobalSettings.SpriteSizeFix)
+                                {
+                                    Texture2D fixedtexture2D = SpriteDump.SpriteSizeFix(subtexture2D, uvpixelr, posborder);
+                                    SpriteDump.SaveTextureToFile(fixedtexture2D, path2);
+                                    UnityEngine.Object.DestroyImmediate(fixedtexture2D);
+                                }
+                                else
+                                {
+                                    SpriteDump.SaveTextureToFile(subtexture2D, path2);
+                                }
+
                                 UnityEngine.Object.DestroyImmediate(subtexture2D);
+                                num++;
                             }
                             UnityEngine.Object.DestroyImmediate(texture2D);
                         }
