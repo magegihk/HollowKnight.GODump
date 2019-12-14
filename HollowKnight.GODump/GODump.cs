@@ -25,7 +25,7 @@ namespace GODump
 
         public override string GetVersion()
         {
-            return "v1.2";
+            return "v1.3";
         }
 
         public override bool IsCurrent()

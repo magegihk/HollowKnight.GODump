@@ -162,14 +162,11 @@ namespace GODump
                         {
                             tk2dSpriteDefinition tk2DSpriteDefinition = frame.spriteCollection.spriteDefinitions[frame.spriteId];
                             Vector3[] pos = tk2DSpriteDefinition.positions;
-                            bool flipped = tk2DSpriteDefinition.flipped == tk2dSpriteDefinition.FlipMode.Tk2d;
 
                             float xmin = pos.Min(v => v.x);
                             float ymin = pos.Min(v => v.y);
                             float xmax = pos.Max(v => v.x);
                             float ymax = pos.Max(v => v.y);
-
-
 
                             Xmin = Xmin < xmin ? Xmin : xmin;
                             Ymin = Ymin < ymin ? Ymin : ymin;
@@ -208,6 +205,17 @@ namespace GODump
                             int x2 = (int)(uv.Max(v => v.x) * texture2D.width);
                             int y2 = (int)(uv.Max(v => v.y) * texture2D.height);
 
+                            // symmetry transformation
+                            int x11 = x1;
+                            int y11 = y1;
+                            int x22 = x2;
+                            int y22 = y2;
+                            if (flipped)
+                            {
+                                x22 = y2 + x1 - y1;
+                                y22 = x2 - x1 + y1;
+                            }
+
                             int x3 = (int)((Xmin - Xmin) / tk2DSpriteDefinition.texelSize.x);
                             int y3 = (int)((Ymin - Ymin) / tk2DSpriteDefinition.texelSize.y);
                             int x4 = (int)((Xmax - Xmin) / tk2DSpriteDefinition.texelSize.x);
@@ -219,8 +227,8 @@ namespace GODump
                             int y6 = (int)((ymax - Ymin) / tk2DSpriteDefinition.texelSize.y);
 
                             RectP uvpixel = new RectP(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
-                            RectP posborder = new RectP(x1 - x5 + x3, y1 - y5 + y3, x4 - x3 + 1, y4 - y3 + 1);
-                            RectP uvpixelr = new RectP(x5 - x3, y5 - y3, x2 - x1 + 1, y2 - y1 + 1);
+                            RectP posborder = new RectP(x11 - x5 + x3, y11 - y5 + y3, x4 - x3 + 1, y4 - y3 + 1);
+                            RectP uvpixelr = new RectP(x5 - x3, y5 - y3, x22 - x11 + 1, y22 - y11 + 1);
 
 
                             if (!File.Exists(path) && GODump.instance.GlobalSettings.dumpAtlasOnce)
@@ -242,7 +250,7 @@ namespace GODump
                             }
                             if (GODump.instance.GlobalSettings.dumpSpriteInfo)
                             {
-                                spriteInfo.Add(frame.spriteId, x1, y1, collectionname, path2r, flipped);
+                                spriteInfo.Add(frame.spriteId, x1, y1, uvpixelr.x, uvpixelr.y, uvpixelr.width, uvpixelr.height, collectionname, path2r, flipped);
                             }
                             if (!File.Exists(path2))
                             {
