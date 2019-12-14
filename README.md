@@ -21,9 +21,10 @@ Dump the gameobject in **Hollow Knight** into sprites.Make it easier to customiz
 7. You may also get an atlas.png and a position.png of each sprite if it is configed in settings
 8. Set dumpAtlasOnce and dumpSpriteInfo to true if you want to pack the sprites back.
 
-##Update
+## Update
 
 * **v1.2** Change naming of sprites to "Animation Num - Frame Num - Collection Num" from "Collection Num" only.Slice sprites one pixel lower than before.Use ** SpritePacker** to pack sprites back into atlas.
+* **v1.3** Add setting **SpriteSizeFix**.Cutted empty space of a sprite in an atlas by tk2d tool is now added back.**No More Worry About Where The Fuck is The Anchor!**
 
 ## Credits
 * [KayDeeTee](https://github.com/KayDeeTee) - SpriteDump Mod save me a lot of time to figure out how to dump pngs.
