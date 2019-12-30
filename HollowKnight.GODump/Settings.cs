@@ -14,7 +14,7 @@ namespace GODump
         }
         public bool dumpAtlasOnce
         {
-            get => GetBool(false);
+            get => GetBool(true);
             set => SetBool(value);
         }
         public bool dumpAtlasAlways
@@ -24,20 +24,21 @@ namespace GODump
         }
         public bool dumpSpriteInfo
         {
-            get => GetBool(false);
+            get => GetBool(true);
             set => SetBool(value);
         }
         public bool SpriteSizeFix
         {
-            get => GetBool(false);
+            get => GetBool(true);
             set => SetBool(value);
         }
+#if DEBUG
         public string mainGameObjectName
         {
             get => GetString("Knight");
             set => SetString(value);
         }
-
+#endif
         public string AnimationsToDump
         {
             get => GetString("AnimationsToDump");

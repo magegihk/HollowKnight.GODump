@@ -25,7 +25,7 @@ namespace GODump
 
         public override string GetVersion()
         {
-            return "v1.3";
+            return "v1.4";
         }
 
         public override bool IsCurrent()
@@ -39,7 +39,9 @@ namespace GODump
             GlobalSettings.dumpAtlasOnce = GlobalSettings.dumpAtlasOnce;
             GlobalSettings.dumpAtlasAlways = GlobalSettings.dumpAtlasAlways;
             GlobalSettings.dumpSpriteInfo = GlobalSettings.dumpSpriteInfo;
+#if DEBUG
             GlobalSettings.mainGameObjectName = GlobalSettings.mainGameObjectName;
+#endif
             GlobalSettings.AnimationsToDump = GlobalSettings.AnimationsToDump;
             GlobalSettings.SpriteSizeFix = GlobalSettings.SpriteSizeFix;
 

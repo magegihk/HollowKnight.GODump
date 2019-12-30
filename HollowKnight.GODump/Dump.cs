@@ -11,32 +11,38 @@ namespace GODump
     class Dump : MonoBehaviour
     {
         private static readonly string _spritePath = Application.persistentDataPath + "/sprites/";
+        private static readonly string _atlasPath = Application.persistentDataPath + "/atlases/";
 
-        private List<tk2dSpriteCollectionData> tk2dSpriteCollectionDatas;
-        private List<tk2dSpriteAnimation> tk2dSpriteAnimations;
-        private string[] AnimLibNames;
+        private List<tk2dSpriteCollectionData> clns;
+        private List<tk2dSpriteAnimation> anims;
+        private string[] animNames;
         private int num;
+#if DEBUG
         private string mainGameObjectName;
         private GameObject mainGameObject;
-
+#endif
 
 
         public void Start()
         {
-            tk2dSpriteCollectionDatas = new List<tk2dSpriteCollectionData>();
-            tk2dSpriteAnimations = new List<tk2dSpriteAnimation>();
-            AnimLibNames = new string[] { };
+            clns = new List<tk2dSpriteCollectionData>();
+            anims = new List<tk2dSpriteAnimation>();
+            animNames = new string[] { };
 
 
         }
         public void Update()
         {
+            if (Input.GetKeyDown(KeyCode.F1))
+            {
+            }
             if (Input.GetKeyDown(KeyCode.F2))
             {
-
+                StartCoroutine(DumpAllAtlases());
             }
             if (Input.GetKeyDown(KeyCode.F3))
             {
+#if DEBUG
                 GODump.instance.LoadGlobalSettings();
                 mainGameObjectName = GODump.instance.GlobalSettings.mainGameObjectName;
                 mainGameObject = GameObject.Find(mainGameObjectName);
@@ -57,24 +63,28 @@ namespace GODump
                     DumpSpriteAnimator(mainGameObject);
                     GODump.instance.Log("End Dumping SpriteAnimator.");
 
-                    AnimLibNames = tk2dSpriteAnimations.Select(a => a.name).ToArray();
-
-                    GODump.instance.GlobalSettings.AnimationsToDump = String.Join("|", AnimLibNames);
-                    GODump.instance.SaveGlobalSettings();
+                    
                 }
+#endif
+                clns = Resources.FindObjectsOfTypeAll<tk2dSpriteCollectionData>().ToList();
+                anims = Resources.FindObjectsOfTypeAll<tk2dSpriteAnimation>().ToList();
 
+                animNames = anims.Select(a => a.name).ToArray();
+
+                GODump.instance.GlobalSettings.AnimationsToDump = String.Join("|", animNames);
+                GODump.instance.SaveGlobalSettings();
             }
 
-            if (Input.GetKeyDown(KeyCode.F4) && mainGameObject)
+            if (Input.GetKeyDown(KeyCode.F4))
             {
                 GODump.instance.LoadGlobalSettings();
-                AnimLibNames = GODump.instance.GlobalSettings.AnimationsToDump.Split('|');
+                animNames = GODump.instance.GlobalSettings.AnimationsToDump.Split('|');
                 StartCoroutine(DumpAllSprites());
 
             }
         }
 
-
+#if DEBUG
 
         private void DumpKnight(GameObject go, int depth)
         {
@@ -105,11 +115,12 @@ namespace GODump
 
         private void DumpSpriteCollection(GameObject go)
         {
+            clns.Clear();
             foreach (tk2dSprite sprite in go.GetComponentsInChildren<tk2dSprite>(true))
             {
-                if (!tk2dSpriteCollectionDatas.Contains(sprite.Collection))
+                if (!clns.Contains(sprite.Collection))
                 {
-                    tk2dSpriteCollectionDatas.Add(sprite.Collection);
+                    clns.Add(sprite.Collection);
 
                     GODump.instance.Log("<SpriteCollectionInfo:[GameObjectName]" + sprite.gameObject.name + "/[CollectionName]" + sprite.Collection.spriteCollectionName + "/[assetName]" + sprite.Collection.assetName + ">");
                     foreach (tk2dSpriteDefinition def in sprite.Collection.spriteDefinitions)
@@ -123,11 +134,12 @@ namespace GODump
 
         private void DumpSpriteAnimator(GameObject go)
         {
+            anims.Clear();
             foreach (tk2dSpriteAnimator anim in go.GetComponentsInChildren<tk2dSpriteAnimator>(true))
             {
-                if (!tk2dSpriteAnimations.Contains(anim.Library))
+                if (!anims.Contains(anim.Library))
                 {
-                    tk2dSpriteAnimations.Add(anim.Library);
+                    anims.Add(anim.Library);
 
                     GODump.instance.Log("<AnimatorLibInfo:[GameObjectName]" + anim.gameObject.name + " /[AnimationName] " + anim.Library.name + ">");
                     foreach (tk2dSpriteAnimationClip clip in anim.Library.clips)
@@ -139,13 +151,37 @@ namespace GODump
             }
         }
 
+#endif
+        private IEnumerator DumpAllAtlases()
+        {
+            GODump.instance.Log("Begin Dumping Atlases.png");
+            num = 0;
+            clns = Resources.FindObjectsOfTypeAll<tk2dSpriteCollectionData>().ToList();
+            anims = Resources.FindObjectsOfTypeAll<tk2dSpriteAnimation>().ToList();
+            GODump.instance.Log("Find " + clns.Count + " Collections.");
+            foreach (tk2dSpriteCollectionData cln in clns)
+            {
+                if (cln.allowMultipleAtlases && cln.textures.Length > 1)
+                {
+                    GODump.instance.LogWarn("Collection " + cln.name + "has multiple textures.");
+                    yield return new WaitForSeconds(1.0f);
+                }
+                num++;
+                Texture2D temp = SpriteDump.TextureReadHack(cln.textures[0] as Texture2D);
+                SpriteDump.SaveTextureToFile(temp, _atlasPath + String.Join("@",GetUsedIns(cln,anims).Select(a => a.name).ToArray()) + "#" + cln.name + ".png");
+                GameObject.DestroyImmediate(temp);
+                yield return new WaitForSeconds(1.0f);
+            }
+            GODump.instance.Log("End Dumping Atlases.png:" + num);
+            yield break;
+        }
         private IEnumerator DumpAllSprites()
         {
             GODump.instance.Log("Begin Dumping Sprite.png");
             num = 0;
-            foreach (var animL in tk2dSpriteAnimations)
+            foreach (var animL in anims)
             {
-                if (AnimLibNames.Contains(animL.name))
+                if (animNames.Contains(animL.name))
                 {
                     int i = 0;
                     SpriteInfo spriteInfo = new SpriteInfo();
@@ -302,9 +338,25 @@ namespace GODump
             GODump.instance.Log("End Dumping Sprite.png " + num + " sprites dumped.");
             yield break;
         }
-
-
-
+        private List<tk2dSpriteAnimation> GetUsedIns(tk2dSpriteCollectionData cln, List<tk2dSpriteAnimation> anims)
+        {
+            List<tk2dSpriteAnimation> used = new List<tk2dSpriteAnimation>();
+            foreach (tk2dSpriteAnimation anim in anims)
+            {
+                foreach (tk2dSpriteAnimationClip clip in anim.clips)
+                {
+                    foreach (tk2dSpriteAnimationFrame frame in clip.frames)
+                    {
+                        if (frame.spriteCollection.name == cln.name && !used.Contains(anim))
+                        {
+                            used.Add(anim);
+                        }
+                    }
+                }
+            }
+            return used;
+        }
+        
 
     }
 

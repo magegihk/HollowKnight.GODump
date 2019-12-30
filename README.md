@@ -7,24 +7,32 @@ Dump the gameobject in **Hollow Knight** into sprites.Make it easier to customiz
 
 1. Install the [Modding API]( https://github.com/seanpr96/HollowKnight.Modding ) of Hollow Knight 
 2. Download the latest archive from Releases
-3. Then unzip the archive into "Steam\SteamApps\common\Hollow Knight"
+3. Then unzip the dll into "Steam\SteamApps\common\Hollow Knight\hollow_knight_Data\Managed\Mods"
 
 
 ## Usage
 
-1. Start the game and GODump.GlobalSettings.json file in "AppData\LocalLow\Team Cherry\Hollow Knight" will be generated
-2. Change settings in GODump.GlobalSettings.json file and save it
-3. Enter a scene where your **mainGameObject** (default by named "Knight") is loaded.
-4. Press F3 and GODump.GlobalSettings.json will be added a new string of animations that your **mainGameObject** contains in itself and its childen
-5. Delete the animations you don't want in that string and save it
-6. Press F4 and all sprites in that **mainGameObject** you choose will be dumped into "AppData\LocalLow\Team Cherry\Hollow Knight\sprites" folder in .png formation
-7. You may also get an atlas.png and a position.png of each sprite if it is configed in settings
-8. Set dumpAtlasOnce and dumpSpriteInfo to true if you want to pack the sprites back.
+1. Start the game and GODump.GlobalSettings.json file in "AppData\LocalLow\Team Cherry\Hollow Knight" will be generated(delete GODump.GlobalSettings.json before you start if you're updating from older version)
+2. Enter a game scene
+3. Press F2 and atlases will be generated in "AppData\LocalLow\Team Cherry\Hollow Knight\atlases".The naming of atlas is Animation1@Animation2@...@AnimationN#AtlasName.png
+4. Press F3 and GODump.GlobalSettings.json will be updated a new string of animations in your scene
+5. Delete the animations you don't want in that string and save it(Learn Animation name from 3.)
+6. Press F4 and all sprites in animations you choose will be dumped into "AppData\LocalLow\Team Cherry\Hollow Knight\sprites" folder in .png formation
+
+## Notice
+
+* The red rectangular is the editable border of the sprite.
+* **dumpPosition** whether dump position.png which shows the position of a sprite inside the atlas.Pack not needed.
+* **dumpAtlasOnce** whether dump atlas into 0.Atlases folder.Pack needed.
+* **dumpAtlasAlways** whether dump atlases into every clip folder.Pack not needed.
+* **dumpSpriteInfo** whether dump SpriteInfo.json into 0.Atlases folder.Pack needed.
+* **SpriteSizeFix** whether fix the area outside the red rectangular of a sprite.Pack with v1.2 selected if Not Fix.Pack with v1.3 selected if Fix.~~Who the Hell Won't Fix It?~~
 
 ## Update
 
 * **v1.2** Change naming of sprites to "Animation Num - Frame Num - Collection Num" from "Collection Num" only.Slice sprites one pixel lower than before.Use ** SpritePacker** to pack sprites back into atlas.
 * **v1.3** Add setting **SpriteSizeFix**.Cutted empty space of a sprite in an atlas by tk2d tool is now added back.**No More Worry About Where The Fuck is The Anchor!**
+* **v1.4** Press F2 to check for atlases you need;Press F3 to print all the animations in the scene
 
 ## Credits
 * [KayDeeTee](https://github.com/KayDeeTee) - SpriteDump Mod save me a lot of time to figure out how to dump pngs.
