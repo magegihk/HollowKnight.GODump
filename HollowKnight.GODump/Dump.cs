@@ -35,6 +35,7 @@ namespace GODump
         {
             if (Input.GetKeyDown(KeyCode.F1))
             {
+                
             }
             if (Input.GetKeyDown(KeyCode.F2))
             {
@@ -44,7 +45,7 @@ namespace GODump
             {
 #if DEBUG
                 GODump.instance.LoadGlobalSettings();
-                mainGameObjectName = GODump.instance.GlobalSettings.mainGameObjectName;
+                mainGameObjectName = GODump.instance.GlobalSettings.MainGameObjectName;
                 mainGameObject = GameObject.Find(mainGameObjectName);
                 if (mainGameObject)
                 {
@@ -267,24 +268,24 @@ namespace GODump
                             RectP uvpixelr = new RectP(x5 - x3, y5 - y3, x22 - x11 + 1, y22 - y11 + 1);
 
 
-                            if (!File.Exists(path) && GODump.instance.GlobalSettings.dumpAtlasOnce)
+                            if (!File.Exists(path) && GODump.instance.GlobalSettings.DumpAtlasOnce)
                             {
                                 SpriteDump.SaveTextureToFile(texture2D, path);
                                 num++;
                             }
-                            if (!File.Exists(path0) && GODump.instance.GlobalSettings.dumpAtlasAlways)
+                            if (!File.Exists(path0) && GODump.instance.GlobalSettings.DumpAtlasAlways)
                             {
                                 SpriteDump.SaveTextureToFile(texture2D, path0);
                                 num++;
                             }
-                            if (!File.Exists(path1) && GODump.instance.GlobalSettings.dumpPosition)
+                            if (!File.Exists(path1) && GODump.instance.GlobalSettings.DumpPosition)
                             {
                                 Texture2D subposition2D = SpriteDump.SubTexturePosition(texture2D, uvpixel);
                                 SpriteDump.SaveTextureToFile(subposition2D, path1);
                                 num++;
                                 UnityEngine.Object.DestroyImmediate(subposition2D);
                             }
-                            if (GODump.instance.GlobalSettings.dumpSpriteInfo)
+                            if (GODump.instance.GlobalSettings.DumpSpriteInfo)
                             {
                                 spriteInfo.Add(frame.spriteId, x1, y1, uvpixelr.x, uvpixelr.y, uvpixelr.width, uvpixelr.height, collectionname, path2r, flipped);
                             }
@@ -315,7 +316,7 @@ namespace GODump
                     }
 
                     string spriteinfopath = _spritePath + animL.name + "/0.Atlases/SpriteInfo.json";
-                    if (!File.Exists(spriteinfopath) && GODump.instance.GlobalSettings.dumpSpriteInfo)
+                    if (!File.Exists(spriteinfopath) && GODump.instance.GlobalSettings.DumpSpriteInfo)
                     {
                         using (FileStream fileStream = File.Create(spriteinfopath))
                         {

@@ -5,9 +5,10 @@ using UnityEngine;
 
 namespace GODump
 {
-    public class GODump : Mod<SaveSettings, GlobalSettings>
+    public class GODump : Mod<SaveSettings,GlobalSettings> 
     {
         internal static GODump instance;
+
         public override void Initialize()
         {
             if (instance != null) return;
@@ -25,7 +26,7 @@ namespace GODump
 
         public override string GetVersion()
         {
-            return "v1.4";
+            return "v1.5";
         }
 
         public override bool IsCurrent()
@@ -35,15 +36,16 @@ namespace GODump
 
         private void InitSettings()
         {
-            GlobalSettings.dumpPosition = GlobalSettings.dumpPosition;
-            GlobalSettings.dumpAtlasOnce = GlobalSettings.dumpAtlasOnce;
-            GlobalSettings.dumpAtlasAlways = GlobalSettings.dumpAtlasAlways;
-            GlobalSettings.dumpSpriteInfo = GlobalSettings.dumpSpriteInfo;
-#if DEBUG
-            GlobalSettings.mainGameObjectName = GlobalSettings.mainGameObjectName;
-#endif
-            GlobalSettings.AnimationsToDump = GlobalSettings.AnimationsToDump;
-            GlobalSettings.SpriteSizeFix = GlobalSettings.SpriteSizeFix;
+//            GlobalSettings.dumpPosition = GlobalSettings.dumpPosition;
+//            GlobalSettings.dumpAtlasOnce = GlobalSettings.dumpAtlasOnce;
+//            GlobalSettings.dumpAtlasAlways = GlobalSettings.dumpAtlasAlways;
+//            GlobalSettings.dumpSpriteInfo = GlobalSettings.dumpSpriteInfo;
+//#if DEBUG
+//            GlobalSettings.mainGameObjectName = GlobalSettings.mainGameObjectName;
+//#endif
+//            GlobalSettings.AnimationsToDump = GlobalSettings.AnimationsToDump;
+//            GlobalSettings.SpriteSizeFix = GlobalSettings.SpriteSizeFix;
+//            GlobalSettings.RedRectangular = GlobalSettings.RedRectangular;
 
             this.SaveGlobalSettings();
         }

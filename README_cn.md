@@ -29,17 +29,19 @@
 ## 说明
 
 * 精灵图中的红框是编辑的边界，编辑红框之外（包括红框）不会生效
-* **dumpPosition** 是否导出位置图，该图和图集一样大，但是只包含一个精灵图，用于确认该精灵图在整个图集中的位置，非打包必要项
-* **dumpAtlasOnce** 是否导出图集到0.Atlases文件夹，打包必要项
-* **dumpAtlasAlways** 是否导出图集到每一个动画片段文件夹，非打包必要项
-* **dumpSpriteInfo** 是否导出SpriteInfo.json文件到0.Atlases文件夹，打包必要项
+* **DumpPosition** 是否导出位置图，该图和图集一样大，但是只包含一个精灵图，用于确认该精灵图在整个图集中的位置，非打包必要项
+* **DumpAtlasOnce** 是否导出图集到0.Atlases文件夹，打包必要项
+* **DumpAtlasAlways** 是否导出图集到每一个动画片段文件夹，非打包必要项
+* **DumpSpriteInfo** 是否导出SpriteInfo.json文件到0.Atlases文件夹，打包必要项
 * **SpriteSizeFix** 是否补全精灵图被削去的部分（红框外），不补全动作对不齐。否的话按v1.2打包，是的话按v1.3打包。~~傻子才选否~~。
+* **RedRectangular** 是否显示红框
 
 ## 更新
 
 * **v1.2** 导出精灵图的编号方式从“图集编号”改为“动画编号3位-帧序编号2位-图集编号3位”；精灵图裁剪向下一个像素；现在可以用**精灵图包装鸡**把导出修改的精灵图打包回去了。
 * **v1.3** 添加设置**SpriteSizeFix**。精灵图被tk2d裁剪掉的空白被补回来了。再也不用担心对不齐的问题！
-* **v1.4** 增加F2提前看有哪些图集；F3现在不再显示**mainGameObject**下的动画，转而显示当前场景的所有动画！
+* **v1.4** 增加F2提前看有哪些图集；F3现在不再显示**MainGameObject**下的动画，转而显示当前场景的所有动画！
+* **v1.5** 在57的API下，json文件不再显示双重设置；添加设置RedRectangular，可选红框
 
 ## 感谢
 * [KayDeeTee](https://github.com/KayDeeTee) - SpriteDump Mod 解决了导出png的问题，帮我节省了不少时间。

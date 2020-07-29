@@ -1,48 +1,78 @@
 ﻿using Modding;
+using System;
+using System.Runtime.Remoting.Messaging;
 
 namespace GODump
 {
 
     public class SaveSettings : ModSettings { }
 
+    [Serializable]
     public class GlobalSettings : ModSettings
     {
-        public bool dumpPosition
+        //default values
+        
+        [NonSerialized]
+        private bool dumpPosition = false;
+        [NonSerialized]
+        private bool dumpAtlasOnce = true;
+        [NonSerialized]
+        private bool dumpAtlasAlways = false;
+        [NonSerialized]
+        private bool dumpSpriteInfo = true;
+        [NonSerialized]
+        private bool spriteSizeFix = true;
+        [NonSerialized]
+        private bool redRectangular = true;
+#if DEBUG
+        [NonSerialized]
+        private string mainGameObjectName = "Knight";
+#endif
+        [NonSerialized]
+        private string animationsToDump = "AnimationsToDump";
+
+        public bool DumpPosition
         {
-            get => GetBool(false);
-            set => SetBool(value);
+            get { return dumpPosition; }
+            set { dumpPosition = value; }
         }
-        public bool dumpAtlasOnce
+        public bool DumpAtlasOnce
         {
-            get => GetBool(true);
-            set => SetBool(value);
+            get { return dumpAtlasOnce; }
+            set { dumpAtlasOnce = value; }
         }
-        public bool dumpAtlasAlways
+        public bool DumpAtlasAlways
         {
-            get => GetBool(false);
-            set => SetBool(value);
+            get { return dumpAtlasAlways; }
+            set { dumpAtlasAlways = value; }
         }
-        public bool dumpSpriteInfo
+        public bool DumpSpriteInfo
         {
-            get => GetBool(true);
-            set => SetBool(value);
+            get { return dumpSpriteInfo; }
+            set { dumpSpriteInfo = value; }
         }
         public bool SpriteSizeFix
         {
-            get => GetBool(true);
-            set => SetBool(value);
+            get { return spriteSizeFix; }
+            set { spriteSizeFix = value; }
+        }
+
+        public bool RedRectangular
+        {
+            get { return redRectangular; }
+            set { redRectangular = value; }
         }
 #if DEBUG
-        public string mainGameObjectName
+        public string MainGameObjectName
         {
-            get => GetString("Knight");
-            set => SetString(value);
+            get { return mainGameObjectName; }
+            set { mainGameObjectName = value; }
         }
 #endif
         public string AnimationsToDump
         {
-            get => GetString("AnimationsToDump");
-            set => SetString(value);
+            get { return animationsToDump; }
+            set { animationsToDump = value; }
         }
     }
 

@@ -53,13 +53,16 @@ namespace GODump
             Texture2D texture2D = new Texture2D(border.width, border.height);
             texture2D.SetPixels(colors);
             texture2D.SetPixels(rectP.x, rectP.y, rectP.width, rectP.height, in_tex.GetPixels());
-            for (int i = 0; i < texture2D.width; i++)
+            if (GODump.instance.GlobalSettings.RedRectangular)
             {
-                for (int j = 0; j < texture2D.height; j++)
+                for (int i = 0; i < texture2D.width; i++)
                 {
-                    if (((i == rectP.xmin - 1 || i == rectP.xmax + 1) && (rectP.ymin - 1 <= j && j <= rectP.ymax + 1)) || ((rectP.xmin - 1 <= i && i <= rectP.xmax + 1) && (j == rectP.ymin - 1 || j == rectP.ymax + 1)))
+                    for (int j = 0; j < texture2D.height; j++)
                     {
-                        texture2D.SetPixel(i, j, Color.red);
+                        if (((i == rectP.xmin - 1 || i == rectP.xmax + 1) && (rectP.ymin - 1 <= j && j <= rectP.ymax + 1)) || ((rectP.xmin - 1 <= i && i <= rectP.xmax + 1) && (j == rectP.ymin - 1 || j == rectP.ymax + 1)))
+                        {
+                            texture2D.SetPixel(i, j, Color.red);
+                        }
                     }
                 }
             }
